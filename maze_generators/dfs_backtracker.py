@@ -1,7 +1,9 @@
+# maze_generators/dsf_backtracker.py
+
 import numpy as np
 import random
 
-def generate_maze(width, height, entry=(0,0), goal=None):
+def generate_maze(width: int, height: int, entry=(0, 0), goal=None):
     maze_w, maze_h = 2*width+1, 2*height+1
     maze = np.zeros((maze_h, maze_w), dtype=int)
     visited = set()
@@ -17,7 +19,7 @@ def generate_maze(width, height, entry=(0,0), goal=None):
             for dx, dy in dirs:
                 nx, ny = cx + dx, cy + dy
                 if 0 <= nx < width and 0 <= ny < height and (nx, ny) not in visited:
-                    visited.add((nx, ny))  # mark on push
+                    visited.add((nx, ny))
                     wall_x = 2*cx+1 + dx
                     wall_y = 2*cy+1 + dy
                     maze[wall_y, wall_x] = 1
@@ -26,16 +28,8 @@ def generate_maze(width, height, entry=(0,0), goal=None):
     sx, sy = entry
     carve_iterative(sx, sy)
 
-    # Define exit if not provided
     gx, gy = goal if goal else (width-1, height-1)
     maze[2*sy+1, 2*sx+1] = 1
     maze[2*gy+1, 2*gx+1] = 1
-
-    print(np.sum(maze))  # sanity check: should be > 0
-    print("Unique values:", np.unique(maze))
-    print("Top-left cell (should be wall):", maze[0, 0])
-    print("Path cell (1,1):", maze[1, 1])
-    print("Visited cells:", len(visited))
-    print("Maze size (walkable grid cells):", width * height)
 
     return maze, (2*sy+1, 2*sx+1), (2*gy+1, 2*gx+1)

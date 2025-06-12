@@ -1,3 +1,4 @@
+# visualizer/grid_plot.py
 import matplotlib.pyplot as plt
 
 def plot_maze(maze, start=None, goal=None):
