@@ -3,13 +3,19 @@
 import pygame
 import time
 
-CELL_SIZE = 20  # pixels
+MAX_WINDOW_SIZE = 900
+MIN_CELL_SIZE = 3
 
 class PygameRenderer:
     def __init__(self, maze_width, maze_height):
         self.maze_w = 2 * maze_width + 1
         self.maze_h = 2 * maze_height + 1
-        self.cell_size = CELL_SIZE
+
+        # Dynamically scale cell size
+        cell_size_w = MAX_WINDOW_SIZE // self.maze_w
+        cell_size_h = MAX_WINDOW_SIZE // self.maze_h
+        self.cell_size = max(MIN_CELL_SIZE, min(cell_size_w, cell_size_h))
+
         self.width = self.maze_w * self.cell_size
         self.height = self.maze_h * self.cell_size
         self.running = True
@@ -52,6 +58,8 @@ class PygameRenderer:
         while waiting:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    waiting = False
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     waiting = False
         pygame.quit()
 

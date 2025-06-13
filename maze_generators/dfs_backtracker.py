@@ -10,6 +10,14 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
     maze = np.zeros((maze_h, maze_w), dtype=int)
     visited = set()
 
+    sx, sy = entry
+    gx, gy = goal if goal else (width - 1, height - 1)
+    start_cell = (2 * sy + 1, 2 * sx + 1)
+    goal_cell = (2 * gy + 1, 2 * gx + 1)
+
+    if render:
+        render.update(maze, entry=start_cell, goal=goal_cell)
+
     def carve_iterative(sx, sy):
         stack = [(sx, sy)]
         visited.add((sx, sy))
@@ -29,19 +37,15 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
                     stack.append((nx, ny))
 
                     if render and render.running:
-                        render.update(maze)
-                        # time.sleep(0.01)
+                        render.update(maze, entry=start_cell, goal=goal_cell)
 
-    sx, sy = entry
     carve_iterative(sx, sy)
-
-    gx, gy = goal if goal else (width - 1, height - 1)
-    maze[2 * sy + 1, 2 * sx + 1] = 1
-    maze[2 * gy + 1, 2 * gx + 1] = 1
+    maze[start_cell] = 1
+    maze[goal_cell] = 1
 
     if render:
-        render.update(maze, entry=(2 * sx + 1, 2 * sy + 1), goal=(2 * gx + 1, 2 * gy + 1))
+        render.update(maze, entry=start_cell, goal=goal_cell)
         render.wait_for_exit()
 
+    return maze, start_cell, goal_cell
 
-    return maze, (2 * sy + 1, 2 * sx + 1), (2 * gy + 1, 2 * gx + 1)

@@ -1,23 +1,28 @@
 # maze_generators/wilsons_algorithm.py
 
-import matplotlib.pyplot as plt
 import numpy as np
 import random
+import time
+from visualizer.pygame_renderer import PygameRenderer
 
-def generate_maze(width: int, height: int, entry=(0, 0), goal=None):
+def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None):
     maze_w, maze_h = 2 * width + 1, 2 * height + 1
     maze = np.zeros((maze_h, maze_w), dtype=int)
 
     def cell_to_maze_coords(x, y):
-        return 2 * y + 1, 2 * x + 1  # returns (row, col)
+        return 2 * y + 1, 2 * x + 1
 
+    sx, sy = entry
+    gx, gy = goal if goal else (width - 1, height - 1)
+    start_cell = cell_to_maze_coords(sx, sy)
+    goal_cell = cell_to_maze_coords(gx, gy)
+
+    if render:
+        render.update(maze, entry=start_cell, goal=goal_cell)
 
     all_cells = [(x, y) for x in range(width) for y in range(height)]
     in_tree = set()
-
-    # Start with one random cell in the tree
-    start_cell = random.choice(all_cells)
-    in_tree.add(start_cell)
+    in_tree.add(random.choice(all_cells))
 
     while len(in_tree) < len(all_cells):
         walk_start = random.choice([cell for cell in all_cells if cell not in in_tree])
@@ -34,15 +39,13 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None):
                 next_cell = (nx, ny)
 
                 if next_cell in path:
-                    loop_start = path.index(next_cell)
-                    path = path[:loop_start + 1]
+                    path = path[:path.index(next_cell) + 1]
                 else:
                     path.append(next_cell)
                     visited_in_walk.add(next_cell)
 
                 cx, cy = next_cell
 
-        # Add the path to the tree
         for i in range(len(path)):
             px, py = path[i]
             maze_row, maze_col = cell_to_maze_coords(px, py)
@@ -56,17 +59,14 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None):
                 wall_col = (maze_col + prev_col) // 2
                 maze[wall_row, wall_col] = 1
 
+            if render and render.running:
+                render.update(maze, entry=start_cell, goal=goal_cell)
 
+    maze[start_cell] = 1
+    maze[goal_cell] = 1
 
-    # Add entry and goal
-    sx, sy = entry
-    gx, gy = goal if goal else (width - 1, height - 1)
-    maze[2 * sy + 1, 2 * sx + 1] = 1
-    maze[2 * gy + 1, 2 * gx + 1] = 1
+    if render:
+        render.update(maze, entry=start_cell, goal=goal_cell)
+        render.wait_for_exit()
 
-    plt.imshow(maze, cmap="gray")
-    plt.title("Debug Maze View")
-    plt.show()
-
-
-    return maze, (2 * sy + 1, 2 * sx + 1), (2 * gy + 1, 2 * gx + 1)
+    return maze, start_cell, goal_cell
