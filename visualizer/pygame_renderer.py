@@ -42,15 +42,25 @@ class PygameRenderer:
             pygame.draw.circle(self.screen, (0, 255, 0), ((gx + 0.5) * self.cell_size, (gy + 0.5) * self.cell_size), self.cell_size // 3)
 
         pygame.display.flip()
+    
+    def mark_cell(self, cell, color=(255, 0, 0)):
+        if not self.running:
+            return
+        y, x = cell
+        center = (x * self.cell_size + self.cell_size // 2, y * self.cell_size + self.cell_size // 2)
+        radius = max(2, self.cell_size // 4)
+        pygame.draw.circle(self.screen, color, center, radius)
 
-
-    def update(self, maze, entry=None, goal=None):
+    def update(self, delay=0.01):
+        if not self.running:
+            return
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-        self.draw_maze(maze, entry, goal)
+        pygame.display.flip()
         self.clock.tick(60)
-        time.sleep(0.01)
+        if delay:
+            time.sleep(delay)
 
 
     def wait_for_exit(self):

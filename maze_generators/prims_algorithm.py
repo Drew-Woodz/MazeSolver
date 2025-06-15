@@ -15,7 +15,9 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
     goal_cell = (2 * gy + 1, 2 * gx + 1)
 
     if render:
-        render.update(maze, entry=start_cell, goal=goal_cell)
+        render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+        render.update()
+
 
     def in_bounds(x, y):
         return 0 <= x < width and 0 <= y < height
@@ -46,7 +48,9 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
         maze[wy, wx] = 1
 
         if render and render.running:
-            render.update(maze, entry=start_cell, goal=goal_cell)
+            render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+            render.update()
+
 
         for nx, ny in neighbors(cx, cy):
             if (nx, ny) not in visited:
@@ -56,7 +60,8 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
     maze[goal_cell] = 1
 
     if render:
-        render.update(maze, entry=start_cell, goal=goal_cell)
-        render.wait_for_exit()
+        render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+        render.update()
+        
 
     return maze, start_cell, goal_cell

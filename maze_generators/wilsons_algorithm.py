@@ -18,7 +18,9 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
     goal_cell = cell_to_maze_coords(gx, gy)
 
     if render:
-        render.update(maze, entry=start_cell, goal=goal_cell)
+        render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+        render.update()
+
 
     all_cells = [(x, y) for x in range(width) for y in range(height)]
     in_tree = set()
@@ -60,13 +62,16 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
                 maze[wall_row, wall_col] = 1
 
             if render and render.running:
-                render.update(maze, entry=start_cell, goal=goal_cell)
+                render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+                render.update()
+
 
     maze[start_cell] = 1
     maze[goal_cell] = 1
 
     if render:
-        render.update(maze, entry=start_cell, goal=goal_cell)
-        render.wait_for_exit()
+        render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+        render.update()
+
 
     return maze, start_cell, goal_cell

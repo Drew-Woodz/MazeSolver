@@ -28,7 +28,9 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
                     continue
                 maze[wy, wx] = 0  # wall
                 if render and render.running:
-                    render.update(maze, entry=start_cell, goal=goal_cell)
+                    render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+                    render.update()
+
         else:
             wx = x + random.randrange(0, w // 2) * 2 + 1
             py = y + random.randrange(0, h // 2) * 2
@@ -38,7 +40,9 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
                     continue
                 maze[wy, wx] = 0  # wall
                 if render and render.running:
-                    render.update(maze, entry=start_cell, goal=goal_cell)
+                    render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+                    render.update()
+
 
         if horizontal:
             divide(x, y, w, wy - y, choose_orientation(w, wy - y))
@@ -65,7 +69,7 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
     maze[goal_cell] = 1
 
     if render:
-        render.update(maze, entry=start_cell, goal=goal_cell)
-        render.wait_for_exit()
+        render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+        render.update()
 
     return maze, start_cell, goal_cell

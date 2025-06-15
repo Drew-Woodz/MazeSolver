@@ -16,7 +16,8 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
     goal_cell = (2 * gy + 1, 2 * gx + 1)
 
     if render:
-        render.update(maze, entry=start_cell, goal=goal_cell)
+        render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+        render.update()
 
     def carve_iterative(sx, sy):
         stack = [(sx, sy)]
@@ -37,15 +38,16 @@ def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None)
                     stack.append((nx, ny))
 
                     if render and render.running:
-                        render.update(maze, entry=start_cell, goal=goal_cell)
+                        render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+                        render.update()
 
     carve_iterative(sx, sy)
     maze[start_cell] = 1
     maze[goal_cell] = 1
 
     if render:
-        render.update(maze, entry=start_cell, goal=goal_cell)
-        render.wait_for_exit()
-
+        render.draw_maze(maze, entry=start_cell, goal=goal_cell)
+        render.update()
+        
     return maze, start_cell, goal_cell
 
