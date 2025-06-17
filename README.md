@@ -57,11 +57,26 @@ Solvers animate their search and highlight the final path in green.
 
 ## 🧪 Usage
 
-### Requirements
-- Python 3.10+
-- `pygame` (`pip install pygame`)
+**Requirements:**
 
-### Run from Command Line
+```bash
+pygame>=2.0
+numpy>=1.21
+```
+
+**Installation**
+```bash
+git clone git@github.com:Drew-Woodz/MazeSolver.git
+cd MazeSolver
+python -m venv .venv
+source .venv/Scripts/activate  # On Windows
+# or
+source .venv/bin/activate      # On Mac/Linux
+
+pip install pygame numpy
+```
+
+**Run from Command Line**
 
 ```bash
 python main.py --algo 2 --size 30 --solve 3
@@ -77,13 +92,6 @@ python main.py --algo 2 --size 30 --solve 3
 
 ```bash
 python main.py --algo 4 --size 40 --solve 1
-```
-
-**Requirements:**
-
-```bash
-pygame>=2.0
-numpy>=1.21
 ```
 
 ### 🗺 Roadmap
