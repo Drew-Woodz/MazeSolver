@@ -3,4 +3,5 @@ echo "__pycache__/
 *.ipynb_checkpoints/
 .env
 .venv/
+mazegen.egg-info/
 " > .gitignore
