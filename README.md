@@ -1,19 +1,118 @@
 # 🧠 MazeSolver
 
+<table><tr>
+<td width="50%" valign="top">
+
 MazeSolver is a Python-based visualization tool for generating and solving mazes using multiple classical algorithms. It supports animation, pathfinding visualization, and is structured for easy experimentation and extension.
 
+</td>
+<td>
+
 <img src="media/recursive_division_greedy_solver.png" width="350"/>
+
+</td>
+</tr></table>
+
+---
+
+## ⚙️ Command-Line Interface (CLI)
+
+In addition to the graphical interface, MazeSolver includes a fully functional CLI utility: `mazegen`, designed for scriptable generation and export of mazes.
+
+### 🔧 Features
+
+* Generate mazes using any of 6 algorithms
+* Output formats: `ascii`, `json`, or `npy`
+* Optional metadata output
+* Customizable ASCII styles
+
+### ✅ Usage
+
+```bash
+# Install locally in development mode
+pip install -e .
+
+# Run CLI from source (safe and portable)
+python -m mazegen.cli --algo recdiv --size 31 --format ascii
+
+# Optional alias for convenience
+alias mazegen="python -m mazegen.cli"
+```
+
+### 📜 Arguments
+
+* `--algo`: Algorithm name (`dfs`, `prims`, `wilsons`, `recdiv`, `handk`, `kruskals`)
+* `--size`: Maze width/height (must be odd). Logical size of the maze (NxN); actual output will be (2N+1)×(2N+1) to include walls
+* `--format`: Output format: `ascii`, `json`, or `npy`
+* `--output`: Save output to file (optional)
+* `--style`: For ASCII format — `blocks`, `dots`, `unicode`, `roguelike`
+* `--save-meta`: Store generation metadata as `.meta.json`
+
+### 🗈 Output Examples
+
+| Style     | Sample                       |Style     | Sample                       |
+| --------- | ---------------------------- | --------- | ---------------------------- |
+| **Blocks**     |  <img src="media/cli_blocks.png" width="300"/>    | **Unicode**   |  <img src="media/cli_unicode.png" width="300"/>   |
+| **Dots**      |  <img src="media/cli_dots.png" width="300"/>      | **Roguelike** |  <img src="media/cli_roguelike.png" width="300"/> |
+
+
+```text
+$ mazegen --algo prims --size 20 --format ascii
+pygame 2.6.1 (SDL 2.28.4, Python 3.11.0)
+█████████████████████████████████████████
+█░░░░░█░░░░░░░█░█░█░░░░░░░░░░░░░█░█░░░░░█
+█░█░███░█████░█░█░█░█████░█░█████░█░█████
+█░█░░░░░█░█░█░░░░░░░░░░░█░█░█░░░░░█░░░░░█
+███░█░███░█░█████████░█░█░███░█░█░█░█████
+█░░░█░░░░░░░░░░░█░█░█░█░█░█░░░█░█░░░░░░░█
+█░█░█████░███░███░█░███░███░█████████████
+█░█░░░░░█░█░░░░░░░█░█░█░░░░░░░░░░░░░░░░░█
+█░███░███░███░███░█░█░█████░███░███░█░███
+█░░░█░█░░░█░░░░░█░░░░░░░░░█░░░█░█░█░█░█░█
+█░█████░█░███░███░█████░█████████░█░███░█
+█░█░░░░░█░░░█░░░█░░░░░█░░░░░░░░░█░█░█░░░█
+███░█░█░█░███░█░█████████░█████░█░███░█░█
+█░█░█░█░█░█░░░█░█░░░░░░░█░░░░░█░░░░░█░█░█
+█░███░███░█████░█░█████████░███░█░█████░█
+█░░░░░░░█░█░░░░░░░░░░░░░░░█░█░█░█░█░█░░░█
+█░███░█████░█░█░███████░█████░█████░███░█
+█░░░█░█░█░░░█░█░░░░░█░░░░░░░░░░░░░░░░░░░█
+█░█████░█████░███░█░███░█░█████████░█░███
+█░█░█░░░░░░░░░█░░░█░░░█░█░█░░░█░█░░░█░░░█
+█░█░███░█░█░███░███░█████████░█░█░█░█░█░█
+█░█░█░░░█░█░░░█░░░█░░░░░█░█░█░█░█░█░█░█░█
+███░█░█████░█████░███████░█░█░█░███░███░█
+█░░░░░█░░░░░░░█░░░░░█░░░█░█░░░█░░░█░░░█░█
+███░███░█████░███░█░█░███░█░█░█░█████████
+█░░░░░█░█░░░░░█░░░█░░░░░░░░░█░░░█░░░░░░░█
+█░█░███░█████████░█░█░█░█░█░█░███░█░█░█░█
+█░█░░░█░█░█░░░░░░░█░█░█░█░█░█░░░░░█░█░█░█
+███░█░███░█░█░█░███░█░█░███░█░███████████
+█░░░█░█░█░░░█░█░░░█░█░█░░░█░█░░░░░█░░░░░█
+█░█░█░█░███░███░█░███░█████████░█░███░███
+█░█░█░█░░░░░█░░░█░█░░░░░░░░░░░█░█░░░░░░░█
+███░█████░███░███░███░█░█░█░█░███████░█░█
+█░░░░░█░░░░░█░█░░░░░█░█░█░█░█░░░█░░░█░█░█
+█░███░█░█░█░█░█░█░█░███░███░█░█░█░█░█████
+█░█░░░█░█░█░█░█░█░█░█░░░█░░░█░█░░░█░█░░░█
+█░█░█████░█████░█░█████░███░█░█░█░███░███
+█░█░█░░░░░█░░░█░█░█░░░░░█░█░█░█░█░░░░░░░█
+█░███████░█░███████░███░█░█░█████░███░█░█
+█░░░░░█░░░░░░░█░░░░░█░░░░░█░░░░░█░░░█░█░█
+█████████████████████████████████████████
+(.venv)
+```
 
 ---
 
 ## 🔧 Features
 
-- 6 Maze Generation Algorithms
-- 6 Maze Solving Algorithms
-- Pygame-powered real-time visualization
-- Command-line interface for easy experimentation
-- Modular structure for adding new algorithms
-- (Coming Soon) GUI with sidebar controls and save/export options
+* 6 Maze Generation Algorithms
+* 6 Maze Solving Algorithms
+* Pygame-powered real-time visualization
+* Command-line interface for easy experimentation
+* Modular structure for adding new algorithms
+* (Coming Soon) GUI with sidebar controls and save/export options
 
 ---
 
@@ -28,11 +127,11 @@ Each generator creates a *perfect maze* — meaning one unique path exists betwe
 5. **Hunt and Kill** – Alternates random walks with deterministic scanning
 6. **Kruskal’s Algorithm** – Uses a randomized spanning tree, very natural structure
 
-| Algorithm | Example |
-|----------|---------|
-| DFS Backtracker | <img src="media/dfs_backtracker_a_star_solver.png" width="200"/>|
-| Recursive Division | <img src="media/recursive_division_greedy_solver.png" width="200"/> |
-| Kruskal’s | <img src="media/kruskals_algorithm_bidirectional_solver.png" width="200"/> |
+| Algorithm          | Example                                                                    |
+| ------------------ | -------------------------------------------------------------------------- |
+| **DFS Backtracker**    | <img src="media/dfs_backtracker_a_star_solver.png" width="250"/>           |
+| **Recursive Division** | <img src="media/recursive_division_greedy_solver.png" width="250"/>        |
+| **Kruskal’s**          | <img src="media/kruskals_algorithm_bidirectional_solver.png" width="250"/> |
 
 ---
 
@@ -47,11 +146,11 @@ Solvers animate their search and highlight the final path in green.
 5. **Depth-First Search (DFS)** – Explores as far as possible along each path
 6. **Bidirectional Search** – Simultaneous search from start and goal
 
-| Solver | Visualization |
-|--------|----------------|
-| A\* | <img src="media/dfs_backtracker_a_star_solver.png" width="200"/> |
-| Dijkstra | <img src="media/prims_algorithm_dijkstra_solver.png" width="200"/> |
-| BFS | <img src="media/wilsons_algorithm_bfs_solver.png" width="200"/> |
+| Solver   | Visualization                                                      |
+| -------- | ------------------------------------------------------------------ |
+| **A\***     | <img src="media/dfs_backtracker_a_star_solver.png" width="200"/>   |
+| **Dijkstra** | <img src="media/prims_algorithm_dijkstra_solver.png" width="200"/> |
+| **BFS**      | <img src="media/wilsons_algorithm_bfs_solver.png" width="200"/>    |
 
 ---
 
@@ -65,6 +164,7 @@ numpy>=1.21
 ```
 
 **Installation**
+
 ```bash
 git clone git@github.com:Drew-Woodz/MazeSolver.git
 cd MazeSolver
@@ -82,11 +182,11 @@ pip install pygame numpy
 python main.py --algo 2 --size 30 --solve 3
 ```
 
-**Arguments:** 
+**Arguments:**
 
-- `--algo: Maze generator (1–6)`
-- `--size: Maze dimensions (NxN)`
-- `--solve: Solver algorithm (1–6) (optional)`
+* `--algo: Maze generator (1–6)`
+* `--size: Maze dimensions (NxN)`
+* `--solve: Solver algorithm (1–6) (optional)`
 
 **Examples:**
 
@@ -94,29 +194,32 @@ python main.py --algo 2 --size 30 --solve 3
 python main.py --algo 4 --size 40 --solve 1
 ```
 
-### 🗺 Roadmap
+### 📌 Roadmap
 
- - GUI with algorithm selectors, input validation, and control buttons
+* GUI with algorithm selectors, input validation, and control buttons
 
- - Maze export as PNG (before and after solving)
+* Maze export as PNG (before and after solving)
 
- - Support for mazes with multiple goals
+* Support for mazes with multiple goals
 
- - Stylized maze wall rendering and aesthetic enhancements
+* Stylized maze wall rendering and aesthetic enhancements
 
- - “Image-to-maze” AI experiment
+* “Image-to-maze” AI experiment
 
- ### 📁 Directory Structure
+### 📁 Directory Structure
 
- ```css
- MazeSolver/
+```css
+MazeSolver/
 ├── main.py
+├── maze_generators/
+│   ├── dfs.py
+│   └── ...
+├── mazegen/
+│   ├──cli.py
+│   └──interface.py
 ├── solvers/
 │   ├── a_star.py
 │   ├── dijkstra.py
-│   └── ...
-├── maze_generators/
-│   ├── dfs_backtracker.py
 │   └── ...
 ├── visualizer/
 │   └── pygame_renderer.py
@@ -127,4 +230,3 @@ python main.py --algo 4 --size 40 --solve 1
 
 MIT License - Open-source for learning, experimentation, and demo purposes.
 Inspired by classic pathfinding visualizations and CS fundamentals.
-

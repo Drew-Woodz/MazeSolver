@@ -4,12 +4,12 @@ import argparse
 from visualizer.pygame_renderer import PygameRenderer
 
 # Import all algorithms
-import maze_generators.dfs_backtracker as dfs_backtracker
-import maze_generators.prims_algorithm as prims_algorithm
-import maze_generators.wilsons_algorithm as wilsons_algorithm
-import maze_generators.recursive_division as recursive_division
-import maze_generators.hunt_and_kill as hunt_and_kill
-import maze_generators.kruskals_algorithm as kruskals_algorithm
+import maze_generators.dfs as dfs
+import maze_generators.prims as prims
+import maze_generators.wilsons as wilsons
+import maze_generators.recdiv as recdiv
+import maze_generators.handk as handk
+import maze_generators.kruskals as kruskals
 # Solver imports
 from solvers.a_star import solve as a_star_solver
 from solvers.dijkstra import solve as dijkstra_solver
@@ -20,12 +20,12 @@ from solvers.bidirectional import solve as bidirectional_solver
 
 
 algorithms = {
-    1: dfs_backtracker.generate_maze,
-    2: prims_algorithm.generate_maze,
-    3: wilsons_algorithm.generate_maze,
-    4: recursive_division.generate_maze,
-    5: hunt_and_kill.generate_maze,
-    6: kruskals_algorithm.generate_maze
+    1: dfs.generate_maze,
+    2: prims.generate_maze,
+    3: wilsons.generate_maze,
+    4: recdiv.generate_maze,
+    5: handk.generate_maze,
+    6: kruskals.generate_maze
 }
 
 algo_names = {
