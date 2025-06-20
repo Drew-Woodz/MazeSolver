@@ -4,4 +4,5 @@ echo "__pycache__/
 .env
 .venv/
 mazegen.egg-info/
+*.json
 " > .gitignore
