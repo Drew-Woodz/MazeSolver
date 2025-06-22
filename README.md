@@ -211,6 +211,9 @@ python main.py --algo 4 --size 40 --solve 1
 ```css
 MazeSolver/
 ├── main.py
+├── gui/
+│   ├── app.py
+│   └── widgets.py 
 ├── maze_generators/
 │   ├── dfs.py
 │   └── ...
