@@ -1,10 +1,11 @@
+# gui/widgets.py
 import pygame
 
 class Button:
     def __init__(self, x, y, w, h, text, callback=None):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
-        self.callback = callback  # <-- NEW
+        self.callback = callback
         self.font = pygame.font.SysFont("consolas", 18)
         self.hovered = False
 
@@ -22,7 +23,7 @@ class Button:
             if self.rect.collidepoint(event.pos):
                 print(f"{self.text} button clicked")
                 if self.callback:
-                    self.callback()  # <-- NEW
+                    self.callback()
 
 
 class RadioSelector:
@@ -77,3 +78,58 @@ class Checkbox:
 
     def is_checked(self):
         return self.checked
+
+
+class TextBox:
+    def __init__(self, x, y, w=60, h=30, font_size=18, label="", min_val=10, max_val=100):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.font = pygame.font.SysFont("consolas", font_size)
+        self.text = ""
+        self.label = label
+        self.min_val = min_val
+        self.max_val = max_val
+        self.active = False
+        self.valid = True
+
+    def draw(self, surface):
+        # Border and fill
+        color = (255, 200, 200) if not self.valid else (255, 255, 255)
+        pygame.draw.rect(surface, color, self.rect)
+        pygame.draw.rect(surface, (180, 180, 180), self.rect, 2)
+
+        # Text
+        txt_surface = self.font.render(self.text, True, (0, 0, 0))
+        surface.blit(txt_surface, (self.rect.x + 5, self.rect.y + 5))
+
+        # Label
+        label_surface = self.font.render(self.label, True, (255, 255, 255))
+        surface.blit(label_surface, (self.rect.x, self.rect.y - 22))
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.active = self.rect.collidepoint(event.pos)
+
+        if event.type == pygame.KEYDOWN and self.active:
+            if event.key == pygame.K_RETURN:
+                self.active = False
+            elif event.key == pygame.K_BACKSPACE:
+                self.text = self.text[:-1]
+            elif event.unicode.isdigit():
+                self.text += event.unicode
+
+        self.validate()
+
+    def validate(self):
+        if self.text == "":
+            self.valid = True
+            return
+        try:
+            val = int(self.text)
+            self.valid = self.min_val <= val <= self.max_val
+        except ValueError:
+            self.valid = False
+
+    def get_value(self):
+        if self.valid and self.text != "":
+            return int(self.text)
+        return None
