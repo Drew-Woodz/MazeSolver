@@ -211,16 +211,28 @@ python main.py --algo 4 --size 40 --solve 1
 ```css
 MazeSolver/
 ├── main.py
+├── gui/
+│   ├── app.py
+│   ├── gui_renderer.py
+│   ├── helpers.py
+│   └── widgets.py 
 ├── maze_generators/
 │   ├── dfs.py
-│   └── ...
+│   ├── handk.py
+│   ├── kruskals.py
+│   ├── prims.py
+│   ├── recdiv.py 
+│   └── wilsons.py
 ├── mazegen/
-│   ├──cli.py
-│   └──interface.py
+│   ├── cli.py
+│   └── interface.py
 ├── solvers/
 │   ├── a_star.py
+│   ├── bfs.py
+│   ├── bidirectional.py
+│   ├── dfs.py
 │   ├── dijkstra.py
-│   └── ...
+│   └── greedy.py
 ├── visualizer/
 │   └── pygame_renderer.py
 └── README.md
