@@ -37,16 +37,21 @@ animate_checkbox = Checkbox(x=950, y=350, label="Animate Generation")
 animate = animate_checkbox.is_checked()
 
 def generate_maze_callback():
+    global renderer
     selected_algo = algo_selector.get_selected()
     algo_fn = algorithm_map.get(selected_algo)
     if not algo_fn:
         print("No algorithm selected!")
         return
+    if not renderer:
+        print("Renderer not initialized.")
+        return
+
 
     animate = animate_checkbox.is_checked()
     width, height = 25, 25
 
-    render = PygameRenderer(width, height) if animate else None
+    render = renderer if animate else None
 
     if "render" in algo_fn.__code__.co_varnames:
         maze, entry, goal = algo_fn(width, height, render=render)
@@ -87,40 +92,10 @@ def draw_ui():
 
 
 # Main loop
+renderer = GuiRenderer(maze_width=25, maze_height=25)
 def run():
     global renderer
     renderer = GuiRenderer(maze_width=25, maze_height=25)
-
-    # Now that renderer exists, define the callback:
-    def generate_maze_callback():
-        selected_algo = algo_selector.get_selected()
-        algo_fn = algorithm_map.get(selected_algo)
-        if not algo_fn:
-            print("No algorithm selected!")
-            return
-
-        animate = animate_checkbox.is_checked()
-        width, height = 25, 25
-
-        render = PygameRenderer(width, height) if animate else None
-
-        if "render" in algo_fn.__code__.co_varnames:
-            maze, entry, goal = algo_fn(width, height, render=render)
-        else:
-            maze, entry, goal = algo_fn(width, height)
-
-        if render:
-            render.wait_for_exit()
-
-        # Convert for GUI display
-        maze = convert_maze_for_gui(maze)
-        entry = convert_coords_for_gui(entry)
-        goal = convert_coords_for_gui(goal)
-
-        renderer.load_maze(maze, entry, goal)
-
-    # UI Buttons now that callback exists
-    generate_btn.callback = generate_maze_callback
 
     while True:
         screen.fill((0, 0, 0))

@@ -5,12 +5,21 @@ class GuiRenderer:
     def __init__(self, maze_width, maze_height):
         self.maze_width = maze_width
         self.maze_height = maze_height
-        self.cell_size = min(900 // maze_width, 800 // maze_height)
-        self.offset_x = (900 - self.maze_width * self.cell_size) // 2
-        self.offset_y = (800 - self.maze_height * self.cell_size) // 2
         self.maze = None
         self.entry = None
         self.goal = None
+        self.cell_size = min(900 // maze_width, 800 // maze_height)
+
+    def wait_for_exit(self):
+        pass
+
+
+    def draw_cell(self, surface, x, y, color):
+        pygame.draw.rect(surface, color, (x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size))
+        pygame.display.update()
+
+    def clear(self, surface,):
+        pygame.draw.rect(surface, (255, 255, 255), (0, 0, 900, 800))
 
     def load_maze(self, maze, entry, goal):
         self.maze = maze
@@ -18,34 +27,14 @@ class GuiRenderer:
         self.goal = goal
 
     def draw_maze(self, surface):
-        pygame.draw.rect(surface, (50, 50, 50), (0, 0, 900, 800))
-
         if self.maze is None:
             return
-
-        for y in range(self.maze.shape[0]):
-            for x in range(self.maze.shape[1]):
-                color = (255, 255, 255) if self.maze[y, x] == 1 else (0, 0, 0)
-                rect = pygame.Rect(
-                    self.offset_x + x * self.cell_size,
-                    self.offset_y + y * self.cell_size,
-                    self.cell_size,
-                    self.cell_size
-                )
-                pygame.draw.rect(surface, color, rect)
-
+        for y, row in enumerate(self.maze):
+            for x, cell in enumerate(row):
+                color = (0, 0, 0) if cell == 0 else (255, 255, 255)
+                pygame.draw.rect(surface, color, (x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size))
         if self.entry:
-            ex, ey = self.entry
-            pygame.draw.rect(surface, (0, 255, 0), (
-                self.offset_x + ex * self.cell_size,
-                self.offset_y + ey * self.cell_size,
-                self.cell_size,
-                self.cell_size))
-
+            pygame.draw.rect(surface, (0, 255, 0), (self.entry[0] * self.cell_size, self.entry[1] * self.cell_size, self.cell_size, self.cell_size))
         if self.goal:
-            gx, gy = self.goal
-            pygame.draw.rect(surface, (255, 0, 0), (
-                self.offset_x + gx * self.cell_size,
-                self.offset_y + gy * self.cell_size,
-                self.cell_size,
-                self.cell_size))
+            pygame.draw.rect(surface, (255, 0, 0), (self.goal[0] * self.cell_size, self.goal[1] * self.cell_size, self.cell_size, self.cell_size))
+
