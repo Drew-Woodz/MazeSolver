@@ -1,4 +1,4 @@
-# maze_generators/wilsons_algorithm.py
+# maze_generators/wilsons.py
 
 import numpy as np
 import random

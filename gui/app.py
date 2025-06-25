@@ -55,7 +55,7 @@ height_box = TextBox(x=1030, y=420, label="Height:")
 
 # --- Generate Maze Logic ---
 def generate_maze_callback():
-    global renderer
+    global renderer, screen
 
     selected_algo = algo_selector.get_selected()
     algo_fn = algorithm_map.get(selected_algo)
@@ -65,16 +65,36 @@ def generate_maze_callback():
 
     animate = animate_checkbox.is_checked()
 
-    width = width_box.get_value()
-    height = height_box.get_value()
-    if width is None or height is None:
-        print("Invalid maze dimensions")
+    # ✅ Validation check before retrieving values
+    if not (width_box.is_valid() and height_box.is_valid()):
+        print("Invalid dimensions! Width and Height must be integers between 10 and 100.")
         return
 
+    try:
+        w = width_box.get_value()
+        h = height_box.get_value()
+        if w is None or h is None:
+            print("❌ Width and Height must be valid integers.")
+            return
+        assert w is not None and h is not None
+        width, height = int(w), int(h)
+
+
+    except (ValueError, TypeError):
+        print("⚠️ Invalid input! Width and Height must be integers.")
+        return
+
+    # Clamp values to safe rendering bounds
+    width = max(10, min(width, 100))
+    height = max(10, min(height, 100))
+
+    print(f"[DEBUG] Maze size requested: {width} x {height}")
+
     # Recalculate display size and reinitialize renderer
-    canvas_width = width * 20  # rough estimate of cell size before calculation
-    canvas_height = height * 20
-    global screen
+    MAX_CANVAS_WIDTH = 1600
+    MAX_CANVAS_HEIGHT = 1200
+    canvas_width = min(width * 20, MAX_CANVAS_WIDTH)
+    canvas_height = min(height * 20, MAX_CANVAS_HEIGHT)
     screen = pygame.display.set_mode((canvas_width + 300, max(canvas_height, 800)))
     renderer = GuiRenderer(maze_width=width, maze_height=height, surface=screen)
 
@@ -114,6 +134,7 @@ def run():
         screen.fill((0, 0, 0))
         renderer.draw_maze_gui()
         draw_ui()
+        pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

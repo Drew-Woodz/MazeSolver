@@ -1,4 +1,4 @@
-# maze_generators/hunt_and_kill.py
+# maze_generators/handk.py
 import numpy as np
 import random
 from visualizer.pygame_renderer import PygameRenderer

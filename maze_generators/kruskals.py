@@ -1,4 +1,4 @@
-# maze_generators/kruskals_algorithm.py
+# maze_generators/kruskals.py
 
 import numpy as np
 import random

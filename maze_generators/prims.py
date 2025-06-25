@@ -1,4 +1,4 @@
-# maze_generators/prims_algorithm.py
+# maze_generators/prims.py
 
 import numpy as np
 import random
