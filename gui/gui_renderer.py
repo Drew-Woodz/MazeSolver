@@ -41,7 +41,10 @@ class GuiRenderer:
         """
         Clear the maze area (left 900px x 800px) to white.
         """
-        pygame.draw.rect(self.surface, (255, 255, 255), (0, 0, 900, 800))
+        width = self.maze_width * self.cell_size
+        height = self.maze_height * self.cell_size
+        pygame.draw.rect(self.surface, (255, 255, 255), (0, 0, width, height))
+
 
     def load_maze(self, maze, entry, goal):
         """

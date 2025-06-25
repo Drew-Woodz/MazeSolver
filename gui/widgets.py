@@ -81,55 +81,47 @@ class Checkbox:
 
 
 class TextBox:
-    def __init__(self, x, y, w=60, h=30, font_size=18, label="", min_val=10, max_val=100):
-        self.rect = pygame.Rect(x, y, w, h)
-        self.font = pygame.font.SysFont("consolas", font_size)
-        self.text = ""
+    def __init__(self, x, y, width=60, height=30, label="", default="25", min_val=10, max_val=100):
+        self.rect = pygame.Rect(x, y, width, height)
         self.label = label
+        self.text = default
+        self.font = pygame.font.SysFont("consolas", 18)
+        self.active = False
         self.min_val = min_val
         self.max_val = max_val
-        self.active = False
-        self.valid = True
-
-    def draw(self, surface):
-        # Border and fill
-        color = (255, 200, 200) if not self.valid else (255, 255, 255)
-        pygame.draw.rect(surface, color, self.rect)
-        pygame.draw.rect(surface, (180, 180, 180), self.rect, 2)
-
-        # Text
-        txt_surface = self.font.render(self.text, True, (0, 0, 0))
-        surface.blit(txt_surface, (self.rect.x + 5, self.rect.y + 5))
-
-        # Label
-        label_surface = self.font.render(self.label, True, (255, 255, 255))
-        surface.blit(label_surface, (self.rect.x, self.rect.y - 22))
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             self.active = self.rect.collidepoint(event.pos)
 
-        if event.type == pygame.KEYDOWN and self.active:
-            if event.key == pygame.K_RETURN:
-                self.active = False
-            elif event.key == pygame.K_BACKSPACE:
+        elif event.type == pygame.KEYDOWN and self.active:
+            if event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
             elif event.unicode.isdigit():
                 self.text += event.unicode
 
-        self.validate()
+    def draw(self, surface):
+        # Draw background color based on validation
+        color = (255, 200, 200) if not self.is_valid() else (255, 255, 255)
+        pygame.draw.rect(surface, color, self.rect)
+        pygame.draw.rect(surface, (0, 0, 0), self.rect, 2)
 
-    def validate(self):
-        if self.text == "":
-            self.valid = True
-            return
-        try:
-            val = int(self.text)
-            self.valid = self.min_val <= val <= self.max_val
-        except ValueError:
-            self.valid = False
+        # Draw text inside the box
+        txt_surface = self.font.render(self.text, True, (0, 0, 0))
+        surface.blit(txt_surface, (self.rect.x + 5, self.rect.y + 5))
+
+        # Draw label above
+        if self.label:
+            label_surface = self.font.render(self.label, True, (200, 200, 200))
+            surface.blit(label_surface, (self.rect.x, self.rect.y - 20))
 
     def get_value(self):
-        if self.valid and self.text != "":
+        try:
             return int(self.text)
-        return None
+        except ValueError:
+            return None
+
+    def is_valid(self):
+        val = self.get_value()
+        return val is not None and self.min_val <= val <= self.max_val
+

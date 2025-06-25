@@ -1,7 +1,7 @@
 # main.py
-
 import argparse
 from visualizer.pygame_renderer import PygameRenderer
+from models.maze import Maze
 
 # Import all algorithms
 import maze_generators.dfs as dfs
@@ -17,7 +17,6 @@ from solvers.bfs import solve as bfs_solver
 from solvers.greedy import solve as greedy_solver
 from solvers.dfs import solve as dfs_solver
 from solvers.bidirectional import solve as bidirectional_solver
-
 
 algorithms = {
     1: dfs.generate_maze,
@@ -63,6 +62,10 @@ if __name__ == "__main__":
                         help="Maze width and height (in cells)")
     parser.add_argument('--solve', type=int, choices=range(1, 7), default=0,
                         help="Choose maze solving algorithm (1=A*, 2=Dijkstra, 3=BFS, 4=Greedy, 5=DFS, 6=Bidirectional)")
+    parser.add_argument('--animate', action='store_true',
+                        help="Enable animation for maze generation")
+    parser.add_argument('--animate-solve', action='store_true',
+                        help="Enable animation for solver")
 
     args = parser.parse_args()
 
@@ -70,14 +73,20 @@ if __name__ == "__main__":
     algo_name = algo_names[args.algo]
 
     print(f"Generating maze using {algo_name} (size {args.size}x{args.size})...")
-    renderer = PygameRenderer(args.size, args.size)
-    maze, start, goal = algo_fn(args.size, args.size, render=renderer)
+    renderer = PygameRenderer(Maze(args.size, args.size))
+    maze, start, goal = algo_fn(args.size, args.size, render=renderer if args.animate else None)
 
     if args.solve:
         solver_fn = solvers[args.solve]
         solver_name = solver_names[args.solve]
         print(f"Solving maze with {solver_name}...")
-        solver_fn(maze, start, goal, render=renderer)
+        if args.animate_solve:
+            path = solver_fn(maze, start, goal, render=renderer)
+            for pos in path:
+                renderer.mark_cell(pos, color=(0, 255, 0))
+                renderer.update(delay=0.1)  # Step-by-step animation
+        else:
+            solver_fn(maze, start, goal, render=renderer)
 
     if renderer.running:
         renderer.wait_for_exit()

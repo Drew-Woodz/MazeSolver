@@ -1,4 +1,4 @@
-# maze_generators/recursive_division.py
+# maze_generators/recdiv.py
 
 import numpy as np
 import random
