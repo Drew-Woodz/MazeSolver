@@ -2,6 +2,8 @@
 import argparse
 from visualizer.pygame_renderer import PygameRenderer
 from models.maze import Maze
+import time
+import pygame
 
 # Import all algorithms
 import maze_generators.dfs as dfs
@@ -73,12 +75,34 @@ if __name__ == "__main__":
     algo_name = algo_names[args.algo]
 
     print(f"Generating maze using {algo_name} (size {args.size}x{args.size})...")
-    renderer = PygameRenderer(Maze(args.size, args.size))
-    maze, start, goal = algo_fn(args.size, args.size, render=renderer if args.animate else None)
+    # Generate maze without renderer first
+    maze, start, goal = algo_fn(args.size, args.size, render=None, animate=args.animate)
+    print(f"Debug: Raw history={maze.history[:20]}...")  # Check first 20 steps
+
+    # Initialize renderer with maze size, white canvas
+    renderer = PygameRenderer(2 * args.size + 1, 2 * args.size + 1)  # Match maze dimensions
+
+    print(f"Debug: animate={args.animate}, history length={len(maze.history)}")  # Check before conditional
+    if args.animate and maze.history:
+        print(f"Starting animation of {len(maze.history)} steps")
+        renderer.set_maze(maze)  # Set maze for reference
+        step_count = 0
+        for cell, wall in maze.get_animation_steps():
+            step_count += 1
+            if step_count % 60 == 0:  # Print every 60 steps
+                print(f"Processing step {step_count}/{len(maze.history)}: cell={cell}, wall={wall}")
+            renderer.draw_step(cell, wall)  # Draw on white
+            renderer.update(delay=0.05)
+            pygame.event.pump()  # Force event processing
+            if not renderer.running:
+                break
+        print(f"Animation complete: {step_count} steps processed")
+    
+    renderer.draw_maze(maze)  # Draw final maze
 
     if args.solve:
-        solver_fn = solvers[args.solve]
-        solver_name = solver_names[args.solve]
+        solver_fn = solvers[args.algo]
+        solver_name = solver_names[args.algo]
         print(f"Solving maze with {solver_name}...")
         if args.animate_solve:
             path = solver_fn(maze, start, goal, render=renderer)
