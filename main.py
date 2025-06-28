@@ -82,16 +82,26 @@ if __name__ == "__main__":
     # Initialize renderer with maze size, white canvas
     renderer = PygameRenderer(2 * args.size + 1, 2 * args.size + 1)  # Match maze dimensions
 
+    # special-case: if this is rec-div and we’re animating, wipe to white first
+    if args.animate and args.algo == 4:          # 4 == Recursive Division
+        renderer.screen.fill((255, 255, 255))    # paths everywhere
+        renderer.update()
+    
+    renderer.mark_cell((maze.start[0], maze.start[1]), (0, 0, 255))
+    renderer.mark_cell((maze.goal[0],  maze.goal[1]),  (0, 255, 0))
+    renderer.update()
+
+
     print(f"Debug: animate={args.animate}, history length={len(maze.history)}")  # Check before conditional
     if args.animate and maze.history:
         print(f"Starting animation of {len(maze.history)} steps")
         renderer.set_maze(maze)  # Set maze for reference
         step_count = 0
-        for cell, wall in maze.get_animation_steps():
+        for step in maze.get_animation_steps():
             step_count += 1
             if step_count % 60 == 0:  # Print every 60 steps
-                print(f"Processing step {step_count}/{len(maze.history)}: cell={cell}, wall={wall}")
-            renderer.draw_step(cell, wall)  # Draw on white
+                print(f"Processing step {step_count}/{len(maze.history)}: {step}")
+            renderer.draw_step(step)  # Draw on white
             renderer.update(delay=0.05)
             pygame.event.pump()  # Force event processing
             if not renderer.running:
@@ -101,8 +111,8 @@ if __name__ == "__main__":
     renderer.draw_maze(maze)  # Draw final maze
 
     if args.solve:
-        solver_fn = solvers[args.algo]
-        solver_name = solver_names[args.algo]
+        solver_fn = solvers[args.solve]
+        solver_name = solver_names[args.solve]
         print(f"Solving maze with {solver_name}...")
         if args.animate_solve:
             path = solver_fn(maze, start, goal, render=renderer)
