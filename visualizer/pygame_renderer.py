@@ -35,14 +35,22 @@ class PygameRenderer:
             print(f"Maze set → shape {maze.maze.shape}")
 
     def draw_step(self, step: Tuple[Tuple[int, int], Tuple[int, int]]):
-        """Replay one carving step – paths are white on a black background."""
+        """Replay one carving step — draw white for path (1) and black for wall (0)."""
         if not (self.running and self.maze):
             return
-        (gy, gx), (wy, wx) = step  # grid‑space
-        pygame.draw.rect(self.screen, (255, 255, 255), self._rect(gx, gy))
-        pygame.draw.rect(self.screen, (255, 255, 255), self._rect(wx, wy))
+
+        (gy, gx), (wy, wx) = step            # grid-space coords
+
+        # -- first point --
+        color = (255, 255, 255) if self.maze.maze[gy, gx] else (0, 0, 0)
+        pygame.draw.rect(self.screen, color, self._rect(gx, gy))
+
+        # -- second point (may be same as first) --
+        color = (255, 255, 255) if self.maze.maze[wy, wx] else (0, 0, 0)
+        pygame.draw.rect(self.screen, color, self._rect(wx, wy))
+
         pygame.display.flip()
-        time.sleep(0.015)  # adjust speed to taste
+        time.sleep(0.015)                    # tweak speed to taste
 
     def draw_maze(self, maze: Optional[Maze] = None):
         maze = maze or self.maze

@@ -82,6 +82,16 @@ if __name__ == "__main__":
     # Initialize renderer with maze size, white canvas
     renderer = PygameRenderer(2 * args.size + 1, 2 * args.size + 1)  # Match maze dimensions
 
+    # special-case: if this is rec-div and we’re animating, wipe to white first
+    if args.animate and args.algo == 4:          # 4 == Recursive Division
+        renderer.screen.fill((255, 255, 255))    # paths everywhere
+        renderer.update()
+    
+    renderer.mark_cell((maze.start[0], maze.start[1]), (0, 0, 255))
+    renderer.mark_cell((maze.goal[0],  maze.goal[1]),  (0, 255, 0))
+    renderer.update()
+
+
     print(f"Debug: animate={args.animate}, history length={len(maze.history)}")  # Check before conditional
     if args.animate and maze.history:
         print(f"Starting animation of {len(maze.history)} steps")
