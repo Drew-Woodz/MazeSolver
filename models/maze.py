@@ -1,20 +1,55 @@
-# models/maze.py
 import numpy as np
 import random
 from typing import List, Tuple, Optional
 
 class Maze:
     def __init__(self, width: int, height: int, entry: Tuple[int, int] = (0, 0), 
-                 goal: Optional[Tuple[int, int]] = None):
-        """Initialize maze with empty grid and coordinates."""
+                 goal: Optional[Tuple[int, int]] = None, max_history_size: int = 10000):
+        """Initialize maze with empty grid and coordinates.
+        
+        Args:
+            width (int): Width of the maze in cells (10-100, doubled internally for grid).
+            height (int): Height of the maze in cells (10-100, doubled internally for grid).
+            entry (Tuple[int, int]): Starting position in cell-space (default: (0, 0)).
+            goal (Tuple[int, int], optional): Goal position in cell-space (default: bottom-right).
+            max_history_size (int): Maximum number of animation steps to retain (default: 10000).
+        
+        Note: Grid size is 2 * width + 1 x 2 * height + 1 to accommodate walls.
+        Raises:
+            ValueError: If dimensions or coordinates are invalid.
+        """
+        # Validate dimensions
+        if not isinstance(width, int) or not isinstance(height, int):
+            raise ValueError("Width and height must be integers.")
+        if not (10 <= width <= 100 and 10 <= height <= 100):
+            raise ValueError("Width and height must be between 10 and 100.")
+        
         self.width = width
         self.height = height
         self.maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=np.int8)
-        self.start = (2 * entry[1] + 1, 2 * entry[0] + 1)  # Convert to maze coords
-        self.goal = (2 * (goal[1] if goal else width - 1) + 1, 
-                     2 * (goal[0] if goal else height - 1) + 1)
+        
+        # Validate and convert entry to grid-space
+        if not isinstance(entry, tuple) or len(entry) != 2:
+            raise ValueError("Entry must be a tuple of (x, y).")
+        entry_x, entry_y = entry
+        if not (0 <= entry_x < width and 0 <= entry_y < height):
+            raise ValueError("Entry coordinates must be within maze bounds (0 to width-1, 0 to height-1).")
+        self.start = (2 * entry_y + 1, 2 * entry_x + 1)  # Convert to grid-space
+        
+        # Validate and convert goal to grid-space
+        if goal is not None:
+            if not isinstance(goal, tuple) or len(goal) != 2:
+                raise ValueError("Goal must be a tuple of (x, y).")
+            goal_x, goal_y = goal
+            if not (0 <= goal_x < width and 0 <= goal_y < height):
+                raise ValueError("Goal coordinates must be within maze bounds (0 to width-1, 0 to height-1).")
+            self.goal = (2 * goal_y + 1, 2 * goal_x + 1)
+        else:
+            self.goal = (2 * (height - 1) + 1, 2 * (width - 1) + 1)  # Default to bottom-right
+        
         self.solutions = []  # List of (path: List[Tuple[int, int]], solver_name: str)
         self.history = []    # Animation steps, populated only if animate=True
+        self.max_history_size = max_history_size  # Cap for memory management
         self.maze[self.start] = 1
         self.maze[self.goal] = 1
 
@@ -43,6 +78,8 @@ class Maze:
             self._wilsons_generate(animate)
         else:
             raise ValueError(f"Unknown algorithm: {algorithm}")
+        if len(self.history) > self.max_history_size:
+            self.history = self.history[-self.max_history_size:]  # Trim to max size
         return self
 
     def _dfs_generate(self, animate: bool):
@@ -301,8 +338,10 @@ class Maze:
             if ds.union((ax, ay), (bx, by)):  # Wall can be removed
                 ay_g, ax_g = self.to_grid_space(ax, ay)
                 by_g, bx_g = self.to_grid_space(bx, by)
-                wy, wx = ay_g + (by_g - ay_g), ax_g + (bx_g - ax_g)
-                self.maze[wy, wx] = 1
+                # Wall is between cells, use the grid-space wall position
+                wy = (ay_g + by_g) // 2 if ay != by else ay_g
+                wx = (ax_g + bx_g) // 2 if ax != bx else ax_g
+                self.maze[wy, wx] = 1  # Remove wall to create path
                 if animate:
                     self.history.append(((wy, wx), (wy, wx)))
 
@@ -316,18 +355,34 @@ class Maze:
             "maze": self.maze.tolist(),
             "start": self.start,
             "goal": self.goal,
-            "solutions": self.solutions
+            "solutions": self.solutions,
+            "history": self.history  # Include history for animation replay
         }
 
-    def get_animation_steps(self) -> List[Tuple[Tuple[int, int], Tuple[int, int]]]:
-        """Return history for animation (empty if not generated with animate=True)."""
-        return self.history
-
     def save_to_png(self, filename: str):
-        pass
+        """Save maze to PNG using Pygame (placeholder implementation)."""
+        import pygame
+        pygame.init()
+        size = self.maze.shape
+        surface = pygame.Surface(size)
+        for y in range(size[0]):
+            for x in range(size[1]):
+                color = (255, 255, 255) if self.maze[y, x] else (0, 0, 0)
+                surface.set_at((x, y), color)
+        pygame.image.save(surface, filename)
+        pygame.quit()
 
     def print_setup(self):
         pass
 
     def clear_history(self):
-        self.history = []
+        """Manually clear animation history to free memory when no longer needed."""
+        self.history.clear()
+
+    def clear_solutions(self):
+        """Manually clear solution paths to free memory when no longer needed."""
+        self.solutions.clear()
+
+    def get_animation_steps(self) -> List[Tuple[Tuple[int, int], Tuple[int, int]]]:
+        """Return history for animation (empty if not generated with animate=True)."""
+        return self.history
