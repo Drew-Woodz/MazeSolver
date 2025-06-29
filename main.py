@@ -1,4 +1,3 @@
-# main.py
 import argparse
 from visualizer.pygame_renderer import PygameRenderer
 from models.maze import Maze
@@ -60,8 +59,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Maze Generator Visualizer")
     parser.add_argument('--algo', type=int, choices=range(1, 7), default=1,
                         help="Choose maze generation algorithm (1=DFS Backtracker, 2=Prim's, 3=Wilson's, 4=Recursive Division, 5=Hunt & Kill, 6=Kruskal's)")
+    parser.add_argument('--width', type=int, default=None,
+                        help="Maze width in cells")
+    parser.add_argument('--height', type=int, default=None,
+                        help="Maze height in cells")
     parser.add_argument('--size', type=int, default=50,
-                        help="Maze width and height (in cells)")
+                        help="Maze width and height for square mazes (overrides width/height)")
     parser.add_argument('--solve', type=int, choices=range(1, 7), default=0,
                         help="Choose maze solving algorithm (1=A*, 2=Dijkstra, 3=BFS, 4=Greedy, 5=DFS, 6=Bidirectional)")
     parser.add_argument('--animate', action='store_true',
@@ -74,13 +77,16 @@ if __name__ == "__main__":
     algo_fn = algorithms[args.algo]
     algo_name = algo_names[args.algo]
 
-    print(f"Generating maze using {algo_name} (size {args.size}x{args.size})...")
+    # Use width and height if provided, otherwise use size for square maze
+    maze_width = args.width if args.width is not None else args.size
+    maze_height = args.height if args.height is not None else args.size
+    print(f"Generating maze using {algo_name} (size {maze_width}x{maze_height})...")
     # Generate maze without renderer first
-    maze, start, goal = algo_fn(args.size, args.size, render=None, animate=args.animate)
+    maze, start, goal = algo_fn(maze_width, maze_height, render=None, animate=args.animate)
     print(f"Debug: Raw history={maze.history[:20]}...")  # Check first 20 steps
 
     # Initialize renderer with maze size, white canvas
-    renderer = PygameRenderer(2 * args.size + 1, 2 * args.size + 1)  # Match maze dimensions
+    renderer = PygameRenderer(2 * maze_width + 1, 2 * maze_height + 1)  # Match maze dimensions
 
     # special-case: if this is rec-div and we’re animating, wipe to white first
     if args.animate and args.algo == 4:          # 4 == Recursive Division
@@ -88,9 +94,8 @@ if __name__ == "__main__":
         renderer.update()
     
     renderer.mark_cell((maze.start[0], maze.start[1]), (0, 0, 255))
-    renderer.mark_cell((maze.goal[0],  maze.goal[1]),  (0, 255, 0))
+    renderer.mark_cell((maze.goal[0], maze.goal[1]), (0, 255, 0))
     renderer.update()
-
 
     print(f"Debug: animate={args.animate}, history length={len(maze.history)}")  # Check before conditional
     if args.animate and maze.history:
@@ -124,3 +129,5 @@ if __name__ == "__main__":
 
     if renderer.running:
         renderer.wait_for_exit()
+    
+    maze.clear_history()
