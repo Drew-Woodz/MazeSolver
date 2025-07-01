@@ -4,6 +4,7 @@ from models.maze import Maze
 def generate_maze(width: int, height: int,
                   entry=(0,0), goal=None,
                   render=None, animate: bool=False):
+    """Return a Maze filled with Prim's algorithm paths."""
     maze = Maze(width, height, entry, goal)
     maze.generate("prims", animate=animate)     # calls Maze._prims_generate
 

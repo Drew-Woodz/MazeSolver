@@ -1,11 +1,13 @@
 # solvers/bfs.py
-
+"""BFS algorithm solver for Maze objects."""
 from collections import deque
 from typing import Tuple, List, Optional
 from models.maze import Maze
 
 
-def _reconstruct(parent, cur):
+def _reconstruct(parent: dict[Tuple[int, int], Tuple[int, int]],
+                 cur: Tuple[int, int]) -> List[Tuple[int, int]]:
+    """Build path by walking backwards through the *parent* map."""
     path = [cur]
     while cur in parent:
         cur = parent[cur]
@@ -15,7 +17,12 @@ def _reconstruct(parent, cur):
 
 def solve(maze: Maze, start: Tuple[int, int], goal: Tuple[int, int],
           render=None, color: Optional[Tuple[int, int, int]] = (0, 255, 0)) -> List[Tuple[int, int]]:
-    """Breadth‑First Search that works with the new Maze class."""
+    """Breadth‑First Search pathfinder.
+
+    Returns the shortest path from *start* to *goal*. If none exists or
+    the run is cancelled via *render*, returns an empty list. When a
+    *render* object is supplied, the search and final path are animated.
+    """
     grid = maze.maze  # 0/1 ndarray
     h, w = grid.shape
 
