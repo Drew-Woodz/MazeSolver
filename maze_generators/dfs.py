@@ -2,6 +2,7 @@
 from models.maze import Maze
 
 def generate_maze(width: int, height: int, entry=(0, 0), goal=None, render=None, animate=False):
+    """Return a Maze filled with dfs algorithm paths."""
     maze = Maze(width, height, entry, goal)
     maze.generate("dfs", animate=animate)  # Use the animate parameter
     if render:

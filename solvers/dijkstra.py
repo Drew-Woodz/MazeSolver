@@ -1,10 +1,13 @@
 # solvers/dijkstra.py
+"""Dijkstra's algorithm solver for Maze objects."""
 import heapq
 from typing import List, Tuple, Optional
 from models.maze import Maze
 
 
-def reconstruct(parent, cur):
+def reconstruct(parent: dict[Tuple[int, int], Tuple[int, int]],
+                cur: Tuple[int, int]) -> List[Tuple[int, int]]:
+    """Build path by walking backwards through *parent*."""
     path = [cur]
     while cur in parent:
         cur = parent[cur]
@@ -16,19 +19,25 @@ def solve(maze: Maze,
           start: Tuple[int, int],
           goal: Tuple[int, int],
           render=None,
-          color: Optional[Tuple[int, int, int]] = (0, 255, 0)  # <-- final path = GREEN
+          color: Optional[Tuple[int, int, int]] = (0, 255, 0)
           ) -> List[Tuple[int, int]]:
+    """Dijkstra shortest‑path solver.
 
+    Returns an optimal path from *start* to *goal* or an empty list if
+    none exists / run is cancelled via *render*.
+    """
     grid = maze.maze
     h, w = grid.shape
     inside = lambda p: 0 <= p[0] < h and 0 <= p[1] < w
     if not (inside(start) and inside(goal)) or grid[start] == 0 or grid[goal] == 0:
         raise ValueError("Invalid start / goal")
 
-    pq, g, parent = [(0, start)], {start: 0}, {}
-    seen = set()
+    pq: list[tuple[int, Tuple[int, int]]] = [(0, start)]
+    g: dict[Tuple[int, int], int] = {start: 0}
+    parent: dict[Tuple[int, int], Tuple[int, int]] = {}
+    seen: set[Tuple[int, int]] = set()
 
-    frontier_colour = (160, 160, 160)          # soft grey (comment out if you want *no* frontier dots)
+    frontier_colour = (160, 160, 160)
 
     while pq:
         if render and not render.running:
@@ -39,16 +48,14 @@ def solve(maze: Maze,
             continue
         seen.add(cur)
 
-        # -------------------- reached goal --------------------
-        if cur == goal:
+        if cur == goal:  # reached goal
             path = reconstruct(parent, cur)
             maze.add_solution(path, "Dijkstra")
             if render:
-                for p in path:                       # paint only once, in GREEN
+                for p in path:
                     render.mark_cell(p, color)
                     render.update()
             return path
-        # ------------------------------------------------------
 
         for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
             nb = (cur[0] + dy, cur[1] + dx)
@@ -59,8 +66,9 @@ def solve(maze: Maze,
                     parent[nb] = cur
                     heapq.heappush(pq, (nd, nb))
 
-        if render:                                   # frontier dot (grey, optional)
+        if render:
             render.mark_cell(cur, frontier_colour)
             render.update()
 
     return []
+
