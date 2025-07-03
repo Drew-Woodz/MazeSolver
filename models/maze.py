@@ -1,3 +1,4 @@
+# models/maze.py
 import numpy as np
 import random
 from typing import List, Tuple, Optional
