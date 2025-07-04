@@ -1,4 +1,4 @@
-# visualizer/pygame_renderer.py – v2 (blank‑screen fix + correct colours)
+# visualizer/pygame_renderer.py
 from models.maze import Maze
 from typing import Optional, Tuple
 import os, pygame, time
