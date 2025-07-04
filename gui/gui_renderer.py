@@ -1,3 +1,4 @@
+# gui/gui_renderer.py
 import pygame
 
 class GuiRenderer:
