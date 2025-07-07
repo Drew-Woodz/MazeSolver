@@ -13,6 +13,7 @@ class GuiRenderer:
         self.running = True
         self._update_dimensions()  # Call after maze is potentially set or handle None
 
+
     def _update_dimensions(self):
         self.surface_rect = pygame.Rect(0, 0, self.surface.get_width() - self.UI_WIDTH_PX, self.surface.get_height())
         if self.maze and hasattr(self.maze, 'maze'):
@@ -34,6 +35,7 @@ class GuiRenderer:
     def set_maze(self, maze_obj):
         self.load_maze(maze_obj)
 
+
     def wait_for_exit(self):
         pass
 
@@ -54,6 +56,7 @@ class GuiRenderer:
             rect = pygame.Rect(cell_x, cell_y, self.cell_size, self.cell_size)
             if self.surface_rect.colliderect(rect):
                 pygame.draw.rect(self.surface, color, rect)
+
 
     def draw_maze_gui(self):
         if self.maze is None or not hasattr(self.maze, 'maze'):
@@ -87,6 +90,7 @@ class GuiRenderer:
         if goal:
             self.draw_cell(goal[0], goal[1], (255, 0, 0))
 
+
     def mark_cell(self, cell, color=(255, 0, 0)):
         y, x = cell
         if self.maze and hasattr(self.maze, 'maze') and 0 <= x < self.maze.maze.shape[1] and 0 <= y < self.maze.maze.shape[0]:
@@ -96,6 +100,7 @@ class GuiRenderer:
             )
             radius = max(2, self.cell_size // 4)
             pygame.draw.circle(self.surface, color, center, radius)
+
 
     def update(self, delay=0.01):
         for event in pygame.event.get():

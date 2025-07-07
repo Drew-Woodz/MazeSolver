@@ -54,13 +54,16 @@ class Maze:
         self.maze[self.start] = 1
         self.maze[self.goal] = 1
 
+
     def to_grid_space(self, cx: int, cy: int) -> Tuple[int, int]:
         """Convert cell-space (cx, cy) to grid-space (gy, gx)."""
         return 2 * cy + 1, 2 * cx + 1
 
+
     def to_cell_space(self, gy: int, gx: int) -> Tuple[int, int]:
         """Convert grid-space (gy, gx) to cell-space (cy, cx)."""
         return (gy - 1) // 2, (gx - 1) // 2
+
 
     def generate(self, algorithm: str, animate: bool = False) -> 'Maze':
         """Generate maze using specified algorithm, optionally storing animation steps."""
@@ -82,6 +85,7 @@ class Maze:
         if len(self.history) > self.max_history_size:
             self.history = self.history[-self.max_history_size:]  # Trim to max size
         return self
+
 
     def _dfs_generate(self, animate: bool):
         """DFS generation: carve paths from start using cell-space, store in grid-space."""
@@ -110,6 +114,7 @@ class Maze:
                         cell_g = self.to_grid_space(nx, ny)
                         self.history.append((cell_g, (wall_y, wall_x)))
 
+
     def _handk_generate(self, animate: bool):
         """Hunt-and-Kill: carve paths in cell-space, update grid-space maze."""
         visited = set()
@@ -123,6 +128,7 @@ class Maze:
             if animate:
                 self.history.append(((gy, gx), (gy, gx)))
 
+
         def neigh(x: int, y: int):
             for dx, dy in [(-1,0), (1,0), (0,-1), (0,1)]:
                 nx, ny = x + dx, y + dy
@@ -130,6 +136,7 @@ class Maze:
                     yield nx, ny
 
         visit(cx, cy)
+
 
         while True:
             unvis = [nb for nb in neigh(cx, cy) if nb not in visited]
